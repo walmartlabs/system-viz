@@ -40,18 +40,24 @@
 
 (defn visualize-system
   "Visualizes the system as a graph, using Graphviz.
+  A temporary file is created to store the Graphviz
+  program; this is then fed through the `dot`
+  command line tool to generate a PDF file.
+
+  The resulting PDF file may optionally be opened, or
+  its location output to the console.
 
   Options:
 
-  enabled
+  :enabled
   : if true, then the graph will be generated and opened.
     Defaults to false, since this is generally unwanted behavior
     in production.
 
-  open
+  :open
   : if true (the default), then the generated image file
     will be opened.  If false, then the path to the image file
-    will be printed to *out*.
+    will be printed to \\*out\\*.
 
   Returns the system unchanged."
   [system options]
