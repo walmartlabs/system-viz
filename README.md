@@ -38,9 +38,12 @@ This will open a window displaying an image somewhat like:
 
 ![System](sample-system.png)
 
+Dependencies between components are shown as arrows; the arrows are only labeled
+when the component's local key for the dependency is different from the target component's system key.
+
 visualize-system returns the system it is passed; it is intended as a filter used for
-side effects (creating and opening the graph image). Since it is a development-time tool,
-it must be explicitly disabled.
+side effects (creating and opening the graph image).
+Since it is a development-time tool, it must be explicitly disabled.
 
 ## License
 
