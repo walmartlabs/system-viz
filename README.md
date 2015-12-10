@@ -1,5 +1,7 @@
 # system-viz
 
+image:http://clojars.org/com.walmartlabs/system-viz/latest-version.svg[Clojars Project, link="http://clojars.org/com.walmartlabs/system-viz"]
+
 system-viz is a tiny, simple library to visualize
 a system, constructed using Stuart Sierra's
 [component](https://github.com/stuartsierra/component)
@@ -13,6 +15,9 @@ Use of this project requires that [Graphviz](http://www.graphviz.org) is install
 | Linux | install `graphviz` using your package manager |
 | OS X | [download the installer](http://www.graphviz.org/Download_macos.php) |
 | Windows |  [download the installer](http://www.graphviz.org/Download_windows.php) |
+
+
+[API documentation](http://howardlewisship.com/com.walmartlabs/system-viz/)
 
 ## Usage
 
