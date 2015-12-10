@@ -2,39 +2,31 @@
   "Visualize a component system using Graphviz."
   (:require [com.stuartsierra.component :as component]
             [io.aviso.toolchest.macros :refer [cond-let]]
-            [clojure.string :as str]
             [clojure.java.browse :refer [browse-url]])
   (:import (java.io File)
            (java.util.concurrent TimeUnit)))
 
-(defn- simplify
-  "Removes characters that outside of alphanumerics."
-  [s]
-  (str/replace s #"\W" ""))
+(defn- quoted [s] (str \" s \"))
 
 (defn- system->dot
   [system]
-  (let [component-ids (keys system)
-        component-id->node-id (zipmap component-ids
-                                      (map #(-> % name simplify gensym) component-ids))]
-    (println "digraph System {")
+  (println "digraph System {")
 
-    (doseq [[k v] component-id->node-id]
-      (println (format "  %s [label=\"%s\"];" v k))
-      (doseq [[local-id system-id] (-> system
-                                       (get k)
-                                       component/dependencies)]
-        (print (format "  %s -> %s"
-                       v
-                       (component-id->node-id system-id)))
+  (doseq [[component-id component] system
+          :let [component-id' (quoted component-id)]]
+    (println (format "  %s" component-id'))
+    (doseq [[local-id system-id] (component/dependencies component)]
+      (print (format "  %s -> %s"
+                     component-id'
+                     (quoted system-id)))
 
-        (when-not (= local-id system-id)
-          (print (format " [label=\"%s\"]"
-                         local-id)))
+      (when-not (= local-id system-id)
+        (print (format " [label=%s]"
+                       (quoted local-id))))
 
-        (println ";")))
+      (println ";")))
 
-    (println "}")))
+  (println "}"))
 
 (def ^:private wait 5)
 
