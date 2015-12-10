@@ -1,4 +1,4 @@
-(defproject com.walmartlabs/system-viz "0.1.0"
+(defproject walmartlabs/system-viz "0.1.0"
   :description "Graphviz visualization of a component system"
   :url "https://github.com/walmartlabs/system-viz"
   :license {:name "Apache Sofware License 2.0"
