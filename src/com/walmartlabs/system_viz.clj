@@ -12,17 +12,17 @@
   [system]
   (println "digraph System {")
 
-  (doseq [[component-id component] system
-          :let [component-id' (quoted component-id)]]
-    (println (format "  %s" component-id'))
-    (doseq [[local-id system-id] (component/dependencies component)]
+  (doseq [[component-key component] system
+          :let [component-key' (quoted component-key)]]
+    (println (format "  %s" component-key'))
+    (doseq [[local-key system-key] (component/dependencies component)]
       (print (format "  %s -> %s"
-                     component-id'
-                     (quoted system-id)))
+                     component-key'
+                     (quoted system-key)))
 
-      (when-not (= local-id system-id)
+      (when-not (= local-key system-key)
         (print (format " [label=%s]"
-                       (quoted local-id))))
+                       (quoted local-key))))
 
       (println ";")))
 
