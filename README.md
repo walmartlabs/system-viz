@@ -43,7 +43,7 @@ when the component's local key for the dependency is different from the target c
 
 visualize-system returns the system it is passed; it is intended as a filter used for
 side effects (creating and opening the graph image).
-Since it is a development-time tool, it must be explicitly disabled.
+Since it is a development-time tool, it must be explicitly enabled.
 
 ## License
 
