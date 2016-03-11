@@ -17,7 +17,7 @@ Use of this project requires that [Graphviz](http://www.graphviz.org) is install
 | Windows |  [download the installer](http://www.graphviz.org/Download_windows.php) |
 
 
-[API documentation](http://http://avisonovate.github.io/docs/system-viz/)
+[API documentation](http://walmartlabs.github.io/system-viz/)
 
 ## Usage
 
