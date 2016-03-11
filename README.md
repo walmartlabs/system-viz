@@ -49,6 +49,16 @@ when the component's local key for the dependency is different from the target c
 visualize-system returns the system it is passed; it is intended as a filter used for
 side effects (creating and opening the graph image).
 
+Sometimes, in larger and more complex projects, you may have errors in your dependencies.
+The component library detects this, but the exception can be extremely difficult to parse.
+
+system-viz can help here: it will identify dependencies that link to non-existent components,
+highlighting the missing components in red:
+
+![Bad System](sample-system-bad.png)
+
+
+
 ## License
 
 Copyright © 2015-2016 Walmart Labs

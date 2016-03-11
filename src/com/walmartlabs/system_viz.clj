@@ -1,6 +1,7 @@
 (ns com.walmartlabs.system-viz
   "Visualize a component system using Graphviz."
   (:require [com.stuartsierra.component :as component]
+            [clojure.set :as set]
             [io.aviso.toolchest.macros :refer [cond-let]]
             [clojure.java.browse :refer [browse-url]])
   (:import (java.io File)
@@ -12,9 +13,22 @@
   [system]
   (println "digraph System {")
 
+  ;; Now find all the unknown keys (dependencies to unknown components).
+  (let [all-keys (->> system
+                      vals
+                      (mapcat (comp vals component/dependencies))
+                      set)
+        bad-keys (set/difference all-keys (-> system keys set))]
+    (when (seq bad-keys)
+      (println "  subgraph {")
+      (println "    node [color=red, style=filled, fontcolor=white];")
+      (doseq [k bad-keys]
+        (println (str "    " (quoted k) ";")))
+      (println "  }")))
+
   (doseq [[component-key component] system
           :let [component-key' (quoted component-key)]]
-    (println (format "  %s" component-key'))
+    (println (format "  %s;" component-key'))
     (doseq [[local-key system-key] (component/dependencies component)]
       (print (format "  %s -> %s"
                      component-key'
@@ -23,7 +37,6 @@
       (when-not (= local-key system-key)
         (print (format " [label=%s]"
                        (quoted local-key))))
-
       (println ";")))
 
   (println "}"))
