@@ -11,5 +11,3 @@
     :message-queue {}
     :router (component/using {} {:queue :message-queue})
     :web-server (component/using {} [:auth :router :handler])))
-
-(def options {:enabled true})

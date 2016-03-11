@@ -39,12 +39,14 @@
   The resulting PDF file may optionally be opened, or
   its location output to the console.
 
+  Generally, this should be invoked before the call to
+  `system-start`.
+
   Options:
 
-  :enabled
-  : if true, then the graph will be generated and opened.
-    Defaults to false, since this is generally unwanted behavior
-    in production.
+  :format
+  : The output format as a keyword; defaults to :pdf, but
+    :png or :svg are also good choices.
 
   :open
   : if true (the default), then the generated image file
@@ -52,44 +54,44 @@
     will be printed to \\*out\\*.
 
   Returns the system unchanged."
-  [system options]
+  ([system]
+    (visualize-system system nil))
+  ([system options]
+   (cond-let
+     [{:keys [format open]
+       :or   {format :pdf
+              open   true}} options]
 
-  (cond-let
-  [{:keys [enabled open]
-      :or {enabled false
-           open true}} options]
 
-    (not enabled)
-    nil
+     [format-name (name format)
+      dot (with-out-str
+            (system->dot system))
+      gvfile (File/createTempFile "system-" ".gv")
+      imagefile (File/createTempFile "system-" (str "." format-name))
+      process (do
+                (spit gvfile dot)
+                (.exec (Runtime/getRuntime) (str "dot -T" format-name " " gvfile " -o " imagefile)))]
+     (do
+       (.waitFor process wait (TimeUnit/SECONDS))
+       (.isAlive process))
+     (binding [*out* *err*]
+       (println "DOT process (to render system map) did not finish after" wait "seconds.")
+       (.destroyForcibly process))
 
-    [dot (with-out-str
-           (system->dot system))
-     gvfile (File/createTempFile "system-" ".gv")
-     imagefile (File/createTempFile "system-" ".pdf")
-     process (do
-               (spit gvfile dot)
-               (.exec (Runtime/getRuntime) (str "dot -Tpdf " gvfile " -o " imagefile)))]
-    (do
-      (.waitFor process wait (TimeUnit/SECONDS))
-      (.isAlive process))
-    (binding [*out* *err*]
-      (println "DOT process (to render system map) did not finish after" wait "seconds.")
-      (.destroyForcibly process))
+     [exit-value (.exitValue process)]
 
-    [exit-value (.exitValue process)]
+     (not (zero? exit-value))
+     (binding [*out* *err*]
+       (println "DOT process failed with status" (.exitValue process))
+       (println (slurp (.getErrorStream process))))
 
-    (not (zero? exit-value))
-    (binding [*out* *err*]
-      (println "DOT process failed with status" (.exitValue process))
-      (println (slurp (.getErrorStream process))))
+     [image-url (.toURL imagefile)]
 
-    [image-url (.toURL imagefile)]
+     open
+     (browse-url image-url)
 
-    open
-    (browse-url image-url)
+     :else
+     (println "System graph rendered to:" (str image-url)))
 
-    :else
-    (println "System graph rendered to:" (str image-url)))
-
-  ;; Ignore the result of cond-let, and just return the system.
-  system)
+    ;; Ignore the result of cond-let, and just return the system.
+   system))

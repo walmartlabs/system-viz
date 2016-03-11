@@ -17,7 +17,7 @@ Use of this project requires that [Graphviz](http://www.graphviz.org) is install
 | Windows |  [download the installer](http://www.graphviz.org/Download_windows.php) |
 
 
-[API documentation](http://howardlewisship.com/com.walmartlabs/system-viz/)
+[API documentation](http://http://avisonovate.github.io/docs/system-viz/)
 
 ## Usage
 
@@ -36,7 +36,7 @@ Here, we are creating a very hypothetical stand-in for some kind of system:
     :router (component/using {} {:queue :message-queue})
     :web-server (component/using {} [:auth :router :handler])))
 
-(visualize-system sys {:enabled true})
+(visualize-system sys)
 ```
 
 This will open a window displaying an image somewhat like:
@@ -48,10 +48,9 @@ when the component's local key for the dependency is different from the target c
 
 visualize-system returns the system it is passed; it is intended as a filter used for
 side effects (creating and opening the graph image).
-Since it is a development-time tool, it must be explicitly enabled.
 
 ## License
 
-Copyright © 2015 Walmart Labs
+Copyright © 2015-2016 Walmart Labs
 
 Distributed under the Apache Software License 2.0.
