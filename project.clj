@@ -7,7 +7,6 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [io.aviso/toolchest "0.1.4"]
                  [com.stuartsierra/component "0.3.1"]]
-  :shell {:commands {"scp" {:dir "target/doc"}}}
   :aliases {"release" ["do"
                        "clean,"
                        "deploy" "clojars"]}
