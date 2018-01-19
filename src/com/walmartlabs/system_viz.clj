@@ -1,17 +1,35 @@
 (ns com.walmartlabs.system-viz
   "Visualize a component system using Graphviz."
-  (:require [com.stuartsierra.component :as component]
-            [clojure.set :as set]
-            [io.aviso.toolchest.macros :refer [cond-let]]
-            [clojure.java.browse :refer [browse-url]])
-  (:import (java.io File)
-           (java.util.concurrent TimeUnit)))
+  (:require
+    [com.stuartsierra.component :as component]
+    [clojure.set :as set]
+    [clojure.java.browse :refer [browse-url]]
+    [clojure.java.io :as io])
+  (:import
+    (java.io File)
+    (java.util.concurrent TimeUnit)))
 
-(defn- quoted [s] (str \" s \"))
+(defn ^:private quoted [s] (str \" s \"))
 
-(defn- system->dot
-  [system]
+(defmacro cond-let
+  "A version of `cond` that allows for `:let` terms."
+  [& forms]
+  {:pre [(even? (count forms))]}
+  (when forms
+    (let [[test-exp result-exp & more-forms] forms]
+      (if (= :let test-exp)
+        `(let ~result-exp
+           (cond-let ~@more-forms))
+        `(if ~test-exp
+           ~result-exp
+           (cond-let ~@more-forms))))))
+
+(defn ^:private system->dot
+  [system horizontal]
   (println "digraph System {")
+
+  (when horizontal
+    (println "graph [rankdir=LR]"))
 
   ;; Now find all the unknown keys (dependencies to unknown components).
   (let [all-keys (->> system
@@ -65,25 +83,35 @@
   : if true (the default), then the generated image file
     will be opened.  If false, then the path to the image file
     will be printed to \\*out\\*.
-
+    
+  :horizontal
+  : If true (the default is false), then the image will be laid out
+    horizontally instead of vertically.
+    
+  :save-as
+  : If provided, then this is the path to which the graphviz source file 
+    will be saved.  If not provided, the graphviz source file is generated
+    as a temporary file.
+      
   Returns the system unchanged."
   ([system]
-    (visualize-system system nil))
+   (visualize-system system nil))
   ([system options]
    (cond-let
-     [{:keys [format open]
-       :or   {format :pdf
-              open   true}} options]
-
-
-     [format-name (name format)
-      dot (with-out-str
-            (system->dot system))
-      gvfile (File/createTempFile "system-" ".gv")
-      imagefile (File/createTempFile "system-" (str "." format-name))
-      process (do
-                (spit gvfile dot)
-                (.exec (Runtime/getRuntime) (str "dot -T" format-name " " gvfile " -o " imagefile)))]
+     :let [{:keys [format open save-as horizontal]
+            :or {format :pdf
+                 horizontal false
+                 open true}} options
+           format-name (name format)
+           dot (with-out-str
+                 (system->dot system horizontal))
+           gvfile (if (some? save-as)
+                    (io/file save-as)
+                    (File/createTempFile "system-" ".gv"))
+           imagefile (File/createTempFile "system-" (str "." format-name))
+           process (do
+                     (spit gvfile dot)
+                     (.exec (Runtime/getRuntime) (str "dot -T" format-name " " gvfile " -o " imagefile)))]
      (do
        (.waitFor process wait (TimeUnit/SECONDS))
        (.isAlive process))
@@ -91,14 +119,14 @@
        (println "DOT process (to render system map) did not finish after" wait "seconds.")
        (.destroyForcibly process))
 
-     [exit-value (.exitValue process)]
+     :let [exit-value (.exitValue process)]
 
      (not (zero? exit-value))
      (binding [*out* *err*]
        (println "DOT process failed with status" (.exitValue process))
        (println (slurp (.getErrorStream process))))
 
-     [image-url (.toURL imagefile)]
+     :let [image-url (.toURL imagefile)]
 
      open
      (browse-url image-url)

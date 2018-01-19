@@ -1,4 +1,11 @@
-## 0.1.2 - UNRELEASED
+## 0.2.0 - UNRELEASED
+
+Update dependencies, add new options:
+
+:horizontal - to layout the diagram left-to-right instead of top-to-bottom.
+
+:save-as - to specify path to the GraphViz file that is generated.
+
 
 ## 0.1.1 - 11 Mar 2016
 
