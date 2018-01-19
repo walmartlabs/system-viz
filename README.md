@@ -61,6 +61,6 @@ highlighting the missing components in red:
 
 ## License
 
-Copyright © 2015-2016 Walmart Labs
+Copyright © 2015-2018 Walmart Labs
 
 Distributed under the Apache Software License 2.0.
