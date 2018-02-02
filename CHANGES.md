@@ -1,3 +1,8 @@
+## 0.3.0 - 2 Feb 2018
+
+New options allow node attributes in the graph to be controlled
+for specific components.
+
 ## 0.2.0 - 19 Jan 2018
 
 Update dependencies, add new options:

@@ -24,7 +24,8 @@ Use of this project requires that [Graphviz](http://www.graphviz.org) is install
 Here, we are creating a very hypothetical stand-in for some kind of system:
 
 ```clj
-(require '[com.walmartlabs.system-viz :refer [visualize-system]])
+(require '[com.walmartlabs.system-viz :refer [visualize-system]]
+         '[com.stuartsierra.component :as component])
 
 (def sys
   (component/system-map
@@ -49,7 +50,22 @@ when the component's local key for the dependency is different from the target c
 visualize-system returns the system it is passed; it is intended as a filter used for
 side effects (creating and opening the graph image).
 
-Sometimes, in larger and more complex projects, you may have errors in your dependencies.
+## Horizontal Output
+
+Some systems will render more readibly with a horizontal layout.
+
+```clj
+(visualize-system sys {:horizontal true})
+```
+
+will render as:
+
+![Horizontal System](horizontal-system.png)
+
+## Broken Systems
+
+Sometimes, in larger and more complex projects, you may have errors in your inter-compoinent
+dependencies.
 The component library detects this, but the exception can be extremely difficult to parse.
 
 system-viz can help here: it will identify dependencies that link to non-existent components,
@@ -57,7 +73,46 @@ highlighting the missing components in red:
 
 ![Bad System](sample-system-bad.png)
 
+## Customizing
 
+The visual representation of the components in the graph can be adjusted for
+specific nodes, using particular component keys in the `:systemviz` namespace.
+
+Example:
+
+```c;j
+
+(require '[com.walmartlabs.system-viz :refer [visualize-system]]
+         '[com.stuartsierra.component :as component])
+
+(def sys
+  (component/system-map
+    :auth (component/using {} {:delegate :local/auth})
+    :local/auth (component/using {:systemviz/color 'magenta} [:database])
+    :database (component/using {:systemviz/highlight true} [])
+    :handler (component/using {} [:database :message-queue])
+    :message-queue {:systemviz/attrs {:shape 'box3d}}
+    :router (component/using {} {:queue :message-queue})
+    :web-server (component/using {} [:auth :router :handler])))
+```
+
+![Customized System](customized-system.png)
+
+`:systemviz/color`
+
+Sets the color of the node to the provided value, and sets the style of the node
+to filled.
+
+`:systemviz/highlight`
+
+Sets the color of the node to a light blue, and increases the font size from
+the default 14 point to 24 point.
+
+`:systemviz/attrs`
+
+Allows the specification of arbitrary [Graphviz node attributes](https://graphviz.gitlab.io/_pages/doc/info/attrs.html)
+as a nested map of keys and values.
+Keys are converted via `name`, but the values are converted using `str`.
 
 ## License
 
