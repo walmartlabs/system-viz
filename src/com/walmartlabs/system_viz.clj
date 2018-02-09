@@ -11,18 +11,24 @@
     (java.io File)))
 
 (defn ^:private component-attributes
-  [component highlight-attrs]
+  [component-key component highlight-attrs decorator]
   (if-not (map? component)
     {}
     (let [{:keys [:systemviz/attrs :systemviz/highlight :systemviz/color]} component]
-      (cond-> {}
+      (cond-> (decorator component-key component)
         attrs (merge attrs)
         color (assoc :color color :style :filled)
         highlight (merge highlight-attrs)))))
 
-(defn system->dot
-  [system horizontal highlight-attrs]
-  (let [dependency-keys (->> system
+(defn ^:private system->dot
+  [system options]
+  (let [{:keys [horizontal highlight decorator]
+         :or {horizontal false
+              decorator (constantly nil)
+              highlight {:color :skyblue
+                         :style :filled
+                         :fontsize 24}}} options
+        dependency-keys (->> system
                              vals
                              (mapcat (comp vals component/dependencies))
                              set)
@@ -33,7 +39,7 @@
                              {}
                              all-keys)
         component-nodes (for [[component-key component] system]
-                          [(key->node-id component-key) (assoc (component-attributes component highlight-attrs)
+                          [(key->node-id component-key) (assoc (component-attributes component-key component highlight decorator)
                                                                :label (str component-key))])
         edges (for [[component-key component] system
                     [local-key system-key] (component/dependencies component)]
@@ -55,8 +61,6 @@
          (reduce into [])
          (d/digraph)
          d/dot)))
-
-(def ^:private wait 5)
 
 (defn visualize-system
   "Visualizes the system as a graph, using Graphviz.
@@ -101,6 +105,10 @@
   :highlight
   : A map of Graphviz attributes and values to be applied to components
     where :graphviz/highlight is true.
+
+  :decorator
+  : A function that accepts a component key and component map, and
+    returns nil, or a map of additional attributes.
     
   :save-as
   : If provided, then this is the path to which the graphviz source file 
@@ -111,17 +119,13 @@
   ([system]
    (visualize-system system nil))
   ([system options]
-   (let [{:keys [format open save-as horizontal highlight]
+   (let [{:keys [format open save-as]
             :or {format :pdf
-                 horizontal false
-                 open true
-                 highlight {:color :skyblue
-                            :style :filled
-                            :fontsize 24}}} options
+                 open true}} options
            format-name (name format)
          image-file (File/createTempFile "system-" (str "." format-name))
          image-url (.toURL image-file)
-         dot (system->dot system horizontal highlight)]
+         dot (system->dot system options)]
 
      (d/save! dot image-file {:format format})
 

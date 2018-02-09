@@ -98,6 +98,8 @@ Example:
 
 ![Customized System](customized-system.png)
 
+## Customization Component Attributes
+
 `:systemviz/color`
 
 Sets the color of the node to the provided value, and sets the style of the node
@@ -114,6 +116,24 @@ Allows the specification of arbitrary [Graphviz node attributes](https://graphvi
 as a nested map of keys and values.
 Values should be strings, numbers, or keywords and will be quoted as
 necessary.
+
+## Customization Options
+
+Two options to `visualize-system` support customization:
+
+`:highlight`
+
+Defines the set of GraphViz node attributes used when a component
+has the `:systemviz/highlight` attribute.
+
+`:decorator`
+
+A function that is passed each component's key and component map
+and return nil, or a map of GraphViz node attributes.
+
+For example, this could allow easy customization of components
+based on the namespace of thier component keys, or other
+factors.
 
 ## License
 

@@ -1,8 +1,10 @@
-## 0.4.0 -- UNRELEASED
+## 0.4.0 -- 9 Feb 2018
 
 Internally, now uses [dorothy](https://github.com/daveray/dorothy) to generate
 the GraphViz DOT source.
 
+A decorator option makes it possible to customize individual component
+node attributes in an open-ended way.
 
 ## 0.3.0 -- 2 Feb 2018
 

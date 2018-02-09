@@ -1,5 +1,5 @@
 (ns com.walmartlabs.system-viz-test
-  (:require [com.walmartlabs.system-viz :refer [visualize-system system->dot]]
+  (:require [com.walmartlabs.system-viz :refer [visualize-system]]
             [com.stuartsierra.component :as component]))
 
 (def sys
@@ -39,11 +39,11 @@
   (visualize-system bad-sys {:save-as "target/bad.gv"})
   (visualize-system customized-sys)
   (visualize-system sys {:horizontal true})
+  (visualize-system sys {:decorator (fn [k _]
+                                      (when (namespace k)
+                                        {:color :green
+                                         :style :filled
+                                         :fontsize :20}))})
 
-  (-> bad-sys
-      (system->dot false {:color :skyblue
-                          :style  :filled
-                          :fontsize 24} )
-      println)
 
   )
