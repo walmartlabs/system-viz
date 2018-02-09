@@ -1,5 +1,5 @@
 (ns com.walmartlabs.system-viz-test
-  (:require [com.walmartlabs.system-viz :refer [visualize-system]]
+  (:require [com.walmartlabs.system-viz :refer [visualize-system system->dot]]
             [com.stuartsierra.component :as component]))
 
 (def sys
@@ -26,18 +26,24 @@
 (def customized-sys
   (component/system-map
     :auth (component/using {} {:delegate :local/auth})
-    :local/auth (component/using {:systemviz/color 'magenta} [:database])
+    :local/auth (component/using {:systemviz/color :magenta} [:database])
     :database (component/using {:systemviz/highlight true} [])
     :handler (component/using {} [:database :message-queue])
-    :message-queue {:systemviz/attrs {:shape 'box3d}}
+    :message-queue {:systemviz/attrs {:shape :box3d}}
     :router (component/using {} {:queue :message-queue})
     :web-server (component/using {} [:auth :router :handler])))
 
 
 (comment
   (visualize-system sys)
-  (visualize-system bad-sys)
+  (visualize-system bad-sys {:save-as "target/bad.gv"})
   (visualize-system customized-sys)
   (visualize-system sys {:horizontal true})
+
+  (-> bad-sys
+      (system->dot false {:color :skyblue
+                          :style  :filled
+                          :fontsize 24} )
+      println)
 
   )

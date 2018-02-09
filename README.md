@@ -88,10 +88,10 @@ Example:
 (def sys
   (component/system-map
     :auth (component/using {} {:delegate :local/auth})
-    :local/auth (component/using {:systemviz/color 'magenta} [:database])
+    :local/auth (component/using {:systemviz/color :magenta} [:database])
     :database (component/using {:systemviz/highlight true} [])
     :handler (component/using {} [:database :message-queue])
-    :message-queue {:systemviz/attrs {:shape 'box3d}}
+    :message-queue {:systemviz/attrs {:shape :box3d}}
     :router (component/using {} {:queue :message-queue})
     :web-server (component/using {} [:auth :router :handler])))
 ```
@@ -112,7 +112,8 @@ the default 14 point to 24 point.
 
 Allows the specification of arbitrary [Graphviz node attributes](https://graphviz.gitlab.io/_pages/doc/info/attrs.html)
 as a nested map of keys and values.
-Keys are converted via `name`, but the values are converted using `str`.
+Values should be strings, numbers, or keywords and will be quoted as
+necessary.
 
 ## License
 
