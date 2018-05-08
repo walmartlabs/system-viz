@@ -64,7 +64,7 @@ will render as:
 
 ## Broken Systems
 
-Sometimes, in larger and more complex projects, you may have errors in your inter-compoinent
+Sometimes, in larger and more complex projects, you may have errors in your inter-component
 dependencies.
 The component library detects this, but the exception can be extremely difficult to parse.
 
