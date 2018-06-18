@@ -1,6 +1,6 @@
 # system-viz
 
-[![Clojars Project](http://clojars.org/walmartlabs/system-viz/latest-version.svg)](http://clojars.org/walmartlabs/system-viz)
+[![Clojars Project](https://img.shields.io/clojars/v/walmartlabs/system-viz.svg)](https://clojars.org/walmartlabs/system-viz)
 
 system-viz is a tiny, simple library to visualize
 a system, constructed using Stuart Sierra's
