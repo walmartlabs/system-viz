@@ -97,7 +97,7 @@
   : if true (the default), then the generated image file
     will be opened.  If false, then the path to the image file
     will be printed to \\*out\\*.
-    
+
   :horizontal
   : If true (the default is false), then the image will be laid out
     horizontally instead of vertically.
@@ -109,21 +109,21 @@
   :decorator
   : A function that accepts a component key and component map, and
     returns nil, or a map of additional attributes.
-    
+
   :save-as
-  : If provided, then this is the path to which the graphviz source file 
+  : If provided, then this is the path to which the graphviz source file
     will be saved.  If not provided, the graphviz source file is generated
     as a temporary file.
-      
+
   Returns the system unchanged."
   ([system]
    (visualize-system system nil))
   ([system options]
-   (let [{:keys [format open save-as]
+   (let [{:keys [format open save-as save-image-as]
             :or {format :pdf
                  open true}} options
            format-name (name format)
-         image-file (File/createTempFile "system-" (str "." format-name))
+         image-file (or (File. (str save-image-as "." format-name)) (File/createTempFile "system-" (str "." format-name)))
          image-url (.toURL image-file)
          dot (system->dot system options)]
 
