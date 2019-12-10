@@ -5,8 +5,7 @@
     [dorothy.core :as dorothy :as d]
     [clojure.set :as set]
     [clojure.java.browse :refer [browse-url]]
-    [clojure.java.io :as io]
-    [clojure.string :as str])
+    [clojure.java.io :as io])
   (:import
     (java.io File)))
 
@@ -97,7 +96,7 @@
   : if true (the default), then the generated image file
     will be opened.  If false, then the path to the image file
     will be printed to \\*out\\*.
-    
+
   :horizontal
   : If true (the default is false), then the image will be laid out
     horizontally instead of vertically.
@@ -109,21 +108,27 @@
   :decorator
   : A function that accepts a component key and component map, and
     returns nil, or a map of additional attributes.
-    
+
   :save-as
-  : If provided, then this is the path to which the graphviz source file 
+  : If provided, then this is the path to which the graphviz source file
     will be saved.  If not provided, the graphviz source file is generated
     as a temporary file.
-      
+
+  :output-to
+  : If provided, this image will be saved to a file with this name, otherwise it will
+    be saved as a temporary file.
+
   Returns the system unchanged."
   ([system]
    (visualize-system system nil))
   ([system options]
-   (let [{:keys [format open save-as]
+   (let [{:keys [format open save-as output-to]
             :or {format :pdf
                  open true}} options
            format-name (name format)
-         image-file (File/createTempFile "system-" (str "." format-name))
+         image-file (if output-to
+                      (File. (str output-to "." format-name))
+                      (File/createTempFile "system-" (str "." format-name)))
          image-url (.toURL image-file)
          dot (system->dot system options)]
 
